@@ -24,7 +24,7 @@
     </template>
 
       <isw-dialog id="dialogRemote" name="myUniqueDialogName" data="{{dataFromRemote}}">
-        <h1>[[subCategorySelected]]</h1>
+        <h1>[[subCategory]]</h1>
         <paper-input id="inputExpenseItem" type="text" label="Gasto a realizar"></paper-input>
         <paper-button dialog-dismiss>Cancel</paper-button>
         <paper-button dialog-confirm autofocus on-tap="_addExpense">Accept</paper-button>  
@@ -46,8 +46,9 @@
       static get properties() {
         return {
           subCategorySelected: {
-            type: String,
-            value: ""
+            type: Array,
+            value: [],
+            observer: '_normalize'
           },
           categorySelected: {
             type: String,
@@ -59,6 +60,8 @@
             value: []
           },
 
+          subCategory:{type:Array, value:""},
+
           expenseCount:{type:Number, value:0}  
         };
       }
@@ -67,7 +70,7 @@
         super.connectedCallback();
         this.addEventListener("click-item", (e)=>{
               
-             this.subCategorySelected = e.detail.subCategory;
+             this.subCategory = e.detail.subCategory;
              this.categorySelected = e.detail.category;
              this._openDialog();
         });
@@ -80,14 +83,16 @@
 
    _addExpense(){
 
+
       this.expenseItem = this.$.inputExpenseItem.value;
       this.expenseCount += parseInt(this.expenseItem);
+
       this.dispatchEvent(new CustomEvent('dataExpenses', {
            bubbles:true,
            composed:true,
            detail:{ 
                   category:this.categorySelected,
-                  subCategory:this.subCategorySelected,
+                  subCategory:this.subCategory,
                   expense:this.expenseItem,
                   expenseCount:this.expenseCount
                  }
@@ -95,6 +100,50 @@
 
          //limpia de input
          this.$.inputExpenseItem.value = "";
+      }
+
+      _normalize(array) {
+          let newArray = [];
+          newArray = array.map(item => {
+            let newItem = {
+              name: item.name,
+              headerImg: '',
+              subCategory: [item.Subcategory]
+            };
+            return newItem;
+          });
+          return this._sortArray(newArray);
+      }
+
+      _sortArray(array) {
+        let newArray = [];
+        for(let x of array){
+          let categories = [];
+         for(let y of array){
+            if(x.name === y.name){
+              categories.push(y.subCategory[0]);
+            }
+          }
+           newArray.push({
+              name: x.name,
+              subCategory: categories
+           });
+        }
+        this.set('catalog', this._removeDuplicates(newArray, 'name'));
+      }
+
+      _removeDuplicates(originalArray, prop){
+        let newArray = [];
+             let lookupObject  = {};
+
+             for(let i in originalArray) {
+                lookupObject[originalArray[i][prop]] = originalArray[i];
+             }
+
+             for(let i in lookupObject) {
+                 newArray.push(lookupObject[i]);
+             }
+              return newArray;
       }
     
  }
