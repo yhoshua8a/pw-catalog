@@ -53,7 +53,9 @@
           catalog: {
             type: Array,
             value: []
-          } 
+          },
+
+          expenseCount:{type:Number, value:0}  
         };
       }
 
@@ -74,13 +76,15 @@
    _addExpense(){
 
       this.expenseItem = this.$.inputExpenseItem.value;
+      this.expenseCount += parseInt(this.expenseItem);
   
       this.dispatchEvent(new CustomEvent('dataExpenses', {
            bubbles:true,
            composed:true,
            detail:{ 
                   category:this.itemSelected,
-                  expense:this.expenseItem
+                  expense:this.expenseItem,
+                  expenseCount:this.expenseCount
                  }
         }));
 
