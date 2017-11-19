@@ -27,7 +27,7 @@
         </pw-category-card>        
       </div>
     </template>
-
+    
       <isw-dialog id="dialogRemote" name="myUniqueDialogName" data="{{dataFromRemote}}">
         <h1>[[subCategory]]</h1>
         <paper-input id="inputExpenseItem" type="text" label="Gasto a realizar"></paper-input>
@@ -65,7 +65,7 @@
             value: []
           },
 
-          subCategory:{type:Array, value:""},
+          subCategory:{type:String, value:""},
 
           expenseCount:{type:Number, value:0}  
         };
@@ -111,7 +111,7 @@
           let newArray = [];
           newArray = array.map(item => {
             let newItem = {
-              name: item.name,
+              name: item.category,
               headerImg: '',
               subCategory: [item.Subcategory]
             };
