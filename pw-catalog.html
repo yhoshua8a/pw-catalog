@@ -11,11 +11,16 @@
       :host {
         display: block;
       }
+
+      .pw-category-card{
+        margin: 20px;
+      }
     </style>
     
     <template is="dom-repeat" items="[[catalog]]" as="category"> 
       <div class="container">
         <pw-category-card 
+          class="pw-category-card"
           text="[[category.name]]"
           image="[[category.headerImg]]"
           items="{{category.subCategory}}">
