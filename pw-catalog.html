@@ -67,11 +67,8 @@
         super.connectedCallback();
         this.addEventListener("click-item", (e)=>{
               
-              console.log(e.detail);
-            this.subCategorySelected = e.detail.subCategory;
+             this.subCategorySelected = e.detail.subCategory;
              this.categorySelected = e.detail.category;
-             console.log(this.categorySelected);
-             console.log(this.subCategorySelected);
              this._openDialog();
         });
       }
