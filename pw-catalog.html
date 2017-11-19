@@ -1,0 +1,110 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../pw-category-card/pw-category-card.html">
+<link rel="import" href="../isw-dialog/isw-dialog.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
+
+
+<dom-module id="pw-catalog">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    
+    <template is="dom-repeat" items="{{catalog}}" as="category"> 
+      <div class="container">
+        <pw-category-card 
+          text="[[category.name]]"
+          image="[[category.headerImg]]"
+          items="{{category.subCategory}}">
+        </pw-category-card>        
+      </div>
+    </template>
+
+      <isw-dialog id="dialogRemote" name="myUniqueDialogName" data="{{dataFromRemote}}">
+        <h1>[[itemSelected]]</h1>
+        <paper-input id="inputExpenseItem" type="text" label="Gasto a realizar"></paper-input>
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus on-tap="_addExpense">Accept</paper-button>  
+      </isw-dialog>
+
+  </template>
+
+  <script>
+    /**
+     * `pw-catalog`
+     * 
+     *
+     * @customElemen
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PwCatalog extends Polymer.Element {
+      static get is() { return 'pw-catalog'; }
+      static get properties() {
+        return {
+          itemSelected: {
+            type: String,
+            value: ""
+          },
+          expenseItem:{type:String, value:""},
+          catalog: {
+            type: Array,
+            value: [
+              {
+                name: "Entretenimiento",
+                headerImg: "https://i1.wp.com/pentavox.net/wp-content/uploads/2016/08/entretenimiento.jpg?fit=1800%2C1023",
+                subCategory: ["Cine", "Videojuegos", "Parque de Diversiones"]
+              },{
+                name:"Gastos Corriente",
+                headerImg: "https://i1.wp.com/www.colombialegalcorp.com/wp-content/uploads/2016/03/consecuencias-no-pagar-renta-a-tiempo.jpg?fit=650%2C434",
+                subCategory: ["Agua", "Celular", "Comida"]
+              },{
+                name:"Educacion",
+                headerImg: "https://mondgraduaciones.com/images/venta-y-renta-de-togas-1.jpg",
+                subCategory: ["Colegiatura", "Materiales"]
+              }
+            ]
+          } 
+        };
+      }
+
+      connectedCallback(){
+        super.connectedCallback();
+        this.addEventListener("click-item", (e)=>{
+              
+            this.itemSelected = e.detail;
+             this._openDialog();
+        });
+      }
+
+      _openDialog(){
+
+        this.$.dialogRemote.open();
+      }
+
+   _addExpense(){
+
+      this.expenseItem = this.$.inputExpenseItem.value;
+      
+      
+      this.dispatchEvent(new CustomEvent('dataExpenses', {
+           bubbles:true,
+           composed:true,
+           detail:{ 
+                  category:this.itemSelected,
+                  expense:this.expenseItem
+                 }
+        }));
+
+         //limpia de input
+         this.$.inputExpenseItem.value = "";
+      }
+    
+ }
+
+  window.customElements.define(PwCatalog.is, PwCatalog);
+  </script>
+</dom-module>
