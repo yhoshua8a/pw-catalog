@@ -13,7 +13,7 @@
       }
     </style>
     
-    <template is="dom-repeat" items="{{catalog}}" as="category"> 
+    <template is="dom-repeat" items="[[catalog]]" as="category"> 
       <div class="container">
         <pw-category-card 
           text="[[category.name]]"
@@ -24,7 +24,7 @@
     </template>
 
       <isw-dialog id="dialogRemote" name="myUniqueDialogName" data="{{dataFromRemote}}">
-        <h1>[[itemSelected]]</h1>
+        <h1>[[subCategorySelected]]</h1>
         <paper-input id="inputExpenseItem" type="text" label="Gasto a realizar"></paper-input>
         <paper-button dialog-dismiss>Cancel</paper-button>
         <paper-button dialog-confirm autofocus on-tap="_addExpense">Accept</paper-button>  
@@ -45,7 +45,11 @@
       static get is() { return 'pw-catalog'; }
       static get properties() {
         return {
-          itemSelected: {
+          subCategorySelected: {
+            type: String,
+            value: ""
+          },
+          categorySelected: {
             type: String,
             value: ""
           },
@@ -63,7 +67,11 @@
         super.connectedCallback();
         this.addEventListener("click-item", (e)=>{
               
-            this.itemSelected = e.detail;
+              console.log(e.detail);
+            this.subCategorySelected = e.detail.subCategory;
+             this.categorySelected = e.detail.category;
+             console.log(this.categorySelected);
+             console.log(this.subCategorySelected);
              this._openDialog();
         });
       }
@@ -77,12 +85,12 @@
 
       this.expenseItem = this.$.inputExpenseItem.value;
       this.expenseCount += parseInt(this.expenseItem);
-  
       this.dispatchEvent(new CustomEvent('dataExpenses', {
            bubbles:true,
            composed:true,
            detail:{ 
-                  category:this.itemSelected,
+                  category:this.categorySelected,
+                  subCategory:this.subCategorySelected,
                   expense:this.expenseItem,
                   expenseCount:this.expenseCount
                  }
